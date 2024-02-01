@@ -66,7 +66,7 @@ class Crawler:
 
     def information_sitemap(self, url_sitemap) -> dict:
         """
-        Cette méthode de classe récupère les URLs et leurs dates dans un sitemap.xml en utilisant le package requests pour le parsing.
+        Cette méthode récupère les URL et leurs dates à partir d'un fichier sitemap.xml en utilisant le module requests pour l'analyse syntaxique.
 
         Args:
             - url_sitemap (str): L'URL du fichier sitemap.xml.
@@ -107,9 +107,8 @@ class Crawler:
 
     def crawl(self, url_cible: str):
         '''
-        Cette fonction va crawler une page avec son URL,
-        limiter le nombre de liens maximum à explorer par page,
-        télécharger la page, et stocker le lien dans le fichier crawled_webpages.txt.
+        La fonction va explorer une page en utilisant son URL, restreindre le nombre maximal de liens à parcourir par page,
+        télécharger la page, puis enregistrer le lien dans le fichier crawled_webpages.txt
         '''
 
         # Créer un compteur i pour limiter le nombre de liens maximum à explorer par page
@@ -179,7 +178,7 @@ class Crawler:
 
     def run(self):
         '''
-            Cette fonction va lancer le crawler pour les tâches demandées dans le sujet
+            Cette fonction va lancer le crawler
         '''
         # On crée un dictionnaire pour stocker les urls et dates trouvés dans les sitemap.xml
         url_date = {}
