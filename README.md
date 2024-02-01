@@ -28,7 +28,6 @@ Ce projet implémente un crawler web en Python, conçu pour explorer les pages w
 
 1. Clonez le dépôt GitHub en utilisant la commande suivante :
    `git clone https://github.com/omaraouachri/Tp1_Omar.git`
-   `cd Crawler` 
 2. Assurez-vous d'avoir les dépendances requises installées : `requests`, `beautifulsoup4`, `protego`, `sqlite3`
 3. Exécutez le fichier `main.py` à la racine du projet.
 
