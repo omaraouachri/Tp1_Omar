@@ -9,11 +9,11 @@ from datetime import datetime
 import hashlib
 
 
-    # Connexion à la base de données (créera la base de données si elle n'existe pas)
+    # Connexion à la base de données
 
 conn = sqlite3.connect('pages_web.db')
 
-        # Création d'un curseur pour exécuter des requêtes SQL
+    # Création d'un curseur
 cur = conn.cursor()
 
 
@@ -133,11 +133,11 @@ class Crawler:
             # Chercher tous les liens disponibles
             path = urljoin(url_cible, link.get('href', ''))
 
-            # Vérifier si le nombre maximum a été atteint. Continuer jusqu'à max_urls_per_page.
+        
             if i >= self.max_per_page:
                 break
 
-            # Vérifier si le lien est à visiter et s'il est autorisé par robots.txt
+            # Vérifier si le lien est à visiter on peut le crawler
             if path not in self.visited and path not in self.to_visit and self.verifie_robots_txt(path):
                 self.to_visit.append(path)
                 i += 1
@@ -150,17 +150,16 @@ class Crawler:
             Étant donné que les dates de dernière modification proviennent des sitemaps, certaines pages en dehors de ces sitemaps peuvent
             ne pas avoir de date de dernière modification associée. Dans de tels cas, cette fonction attribue un âge de 0 jours à ces pages.
         '''
-        # Chaque document a pour identifiant unique un hash de l’URL
+        # construire l'identifiant
         url_hash = hashlib.sha256(url.encode()).hexdigest()
 
-        # Vérifier si la page existe déjà dans la base de données
+        # Vérifier si la page exist dans la base
         cur.execute("SELECT * FROM pages_web WHERE url=?", (url,))
         existing_page = cur.fetchone()
 
         if dernier_modif is not None:
             age = (datetime.now() - datetime.strptime(dernier_modif, "%Y-%m-%dT%H:%M:%S+00:00")).days
 
-        # Utilisation d'une seule condition pour déterminer si la page existe déjà
         if existing_page:
             # Mettre à jour l'âge de la page
             cur.execute("UPDATE pages_web SET dernier_modif=?, age=? WHERE url=?", (dernier_modif, age, url))
@@ -180,25 +179,24 @@ class Crawler:
         '''
             Cette fonction va lancer le crawler
         '''
-        # On crée un dictionnaire pour stocker les urls et dates trouvés dans les sitemap.xml
+        # Un dictionnaire est créé pour stocker les URL et les dates trouvées dans les fichiers sitemap.xml.
         url_date = {}
         if True:
-            # Lire les fichiers sitemap.xml des sites pour réduire les requêtes aux urls
+            # Lire les fichiers sitemap.xml des sites afin de minimiser le nombre de requêtes aux URLs.
             r = requests.get(urljoin(self.url, "/robots.txt"))
             rp = Protego.parse(r.text)
             sitemaps = rp.sitemaps
             for sitemap in sitemaps:
-                # dict_url est un dictionnaire pour stocker les urls et dates trouvés dans un sitemaps, puis on va l'ajouter dans la dictionnaire globale url_date plus tard
+            
                 dict_url  = self.information_sitemap(sitemap)
                 for loc in dict_url.keys():
                     self.to_visit.append(loc)
                 url_date.update(dict_url)
 
-        # Boucle pour visiter tous les urls dans le urls_to_visit (frontier) si les conditions sont satisfaites
         while self.to_visit and len(self.visited) < self.max_urls:
             url = self.to_visit.pop(0)
             print(url)
-            # Pour gérer des Exceptions qui peuvent être levé durant le processus de crawling et éviter l'arrêt inattendu de code, on va les mettre dans un try bloc
+            # gestion des exeption 
             try:
                 self.crawl(url)
                 # Une fois la page a été crawlée, on va l'ajouter ou la mettre à jours dans la base de donnée
@@ -209,5 +207,5 @@ class Crawler:
                 print(f'Failed to crawl {url}: {str(e)}')
             finally:
                 self.visited.append(url)
-            # Respecter la politesse en attendant 5 secondes entre chaque appel
+            # politeness
             sleep(5)
